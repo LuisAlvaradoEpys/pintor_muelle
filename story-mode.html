@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modo Historia - El Pintor del Muelle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(to bottom, #1a1a2e, #16213e, #0f3460);
+            overflow: hidden;
+        }
+
+        .story-container {
+            perspective: 1000px;
+        }
+
+        .story-card {
+            transform-style: preserve-3d;
+            transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .story-card.fade-in {
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .story-card.fade-out {
+            animation: fadeOutDown 0.6s ease-in forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(60px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes fadeOutDown {
+            from {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-60px) scale(0.9);
+            }
+        }
+
+        .key-hint {
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+
+        .icon-float {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-15px);
+            }
+        }
+
+        .progress-bar {
+            transition: width 0.5s ease-out;
+        }
+
+        .choice-button {
+            transition: all 0.3s ease;
+        }
+
+        .choice-button:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .background-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255,255,255,.1) 35px, rgba(255,255,255,.1) 70px);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .typewriter {
+            overflow: hidden;
+            white-space: pre-wrap;
+            animation: typing 2s steps(60, end);
+        }
+
+        @keyframes typing {
+            from { max-height: 0; }
+            to { max-height: 1000px; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    
+    <div class="background-pattern"></div>
+
+    <!-- Contenedor Principal -->
+    <div class="story-container relative z-10 max-w-4xl w-full">
+        
+        <!-- Barra de Progreso Superior -->
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-amber-400 font-semibold text-sm">Progreso de la Historia</span>
+                <span class="text-gray-400 text-sm"><span id="current-step">1</span> / <span id="total-steps">12</span></span>
+            </div>
+            <div class="w-full bg-gray-800 rounded-full h-3 overflow-hidden shadow-inner">
+                <div id="progress-bar" class="progress-bar bg-gradient-to-r from-amber-500 to-orange-600 h-3 rounded-full" style="width: 8.33%"></div>
+            </div>
+        </div>
+
+        <!-- Tarjeta de Historia -->
+        <div id="story-card" class="story-card bg-gray-900 bg-opacity-90 backdrop-blur-lg rounded-2xl shadow-2xl p-8 md:p-12 border border-gray-700">
+            
+            <!-- Contenido que cambia -->
+            <div id="story-content" class="text-center">
+                <!-- El contenido se cargará dinámicamente -->
+            </div>
+
+            <!-- Indicador de Tecla -->
+            <div class="mt-8 flex justify-center items-center gap-4">
+                <div class="key-hint bg-gray-800 border-2 border-amber-500 rounded-lg px-6 py-3 shadow-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="text-gray-400 text-sm">Presiona</span>
+                        <kbd class="bg-gray-700 text-amber-400 px-4 py-2 rounded font-bold text-lg shadow-md">
+                            ESPACIO
+                        </kbd>
+                        <span class="text-gray-400 text-sm">o</span>
+                        <kbd class="bg-gray-700 text-amber-400 px-4 py-2 rounded font-bold text-lg shadow-md">
+                            →
+                        </kbd>
+                        <span class="text-gray-400 text-sm">para continuar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estados de la historia
+        const storySteps = [
+            {
+                icon: "🏠",
+                title: "La Casa del Muelle",
+                text: "Un hombre humilde vive en una pequeña casa al lado de un muelle. El olor a sal y el sonido de las olas son su compañía constante. Cada amanecer observa cómo los pescadores parten hacia el horizonte.",
+                image: null,
+                color: "from-blue-900 to-gray-900"
+            },
+            {
+                icon: "📰",
+                title: "Los Recursos Humildes",
+                text: "Sus materiales son escasos pero significativos: papel de periódico viejo que recoge del muelle cada mañana, amarillento por el sol y la humedad. Sus páginas cuentan historias olvidadas del mundo.",
+                image: null,
+                color: "from-amber-900 to-gray-900"
+            },
+            {
+                icon: "🦑",
+                title: "La Tinta del Mar",
+                text: "Y tinta de calamar, oscura como la noche, que obtiene de los pescadores a cambio de pequeños favores. Esta tinta tiene un aroma peculiar, salado y misterioso, como el mismo océano.",
+                image: null,
+                color: "from-gray-900 to-blue-900"
+            },
+            {
+                icon: "🎨",
+                title: "La Creación Nocturna",
+                text: "Cada noche, bajo la luz tenue de una vela, pinta sus sueños y angustias sobre el periódico. Sus trazos son torpes pero honestos, cargados de emoción y desesperación por expresar lo que lleva dentro.",
+                image: null,
+                color: "from-purple-900 to-gray-900"
+            },
+            {
+                icon: "🔥",
+                title: "El Punto de Quiebre",
+                text: "Una noche de tormenta, lleno de dudas sobre su talento, toma su pintura más preciada y la arroja al fuego de la chimenea. Ve hipnotizado cómo las llamas devoran meses de trabajo, reduciendo sus sueños a cenizas humeantes.",
+                image: null,
+                color: "from-red-900 to-orange-900"
+            },
+            {
+                icon: "👤",
+                title: "El Visitante Misterioso",
+                text: "Días después, cuando aún puede oler el humo de su obra quemada, un hombre elegante vestido de negro aparece en su puerta. Sus ojos penetrantes parecen ver más allá de las paredes deterioradas de la casa.",
+                image: null,
+                color: "from-gray-900 to-black"
+            },
+            {
+                icon: "💰",
+                title: "La Oferta Inesperada",
+                text: "\"Quiero comprar tu casa\", dice el extraño con voz firme. La oferta es generosa, más de lo que la pequeña casa vale. Sin más opciones y con el corazón pesado, nuestro protagonista acepta. Es hora de dejar atrás el muelle.",
+                image: null,
+                color: "from-green-900 to-gray-900"
+            },
+            {
+                icon: "🎁",
+                title: "El Regalo Enigmático",
+                text: "Antes de partir, el comprador deja sobre la mesa de madera tres objetos envueltos en papel de seda. \"Un regalo de despedida\", susurra antes de desaparecer en la niebla del amanecer.",
+                image: null,
+                color: "from-amber-900 to-purple-900"
+            },
+            {
+                icon: "✨",
+                title: "Las Tres Herramientas",
+                text: "Al desenvolverlos, descubre tres herramientas extraordinarias: una pluma antigua de escribano con detalles dorados, una pelusa extraña que brilla con luz propia como polvo de estrellas, y un bolígrafo plateado que parece vibrar suavemente en su mano.",
+                choices: true,
+                color: "from-blue-900 to-purple-900"
+            },
+            {
+                icon: "🚂",
+                title: "El Viaje a la Ciudad",
+                text: "Con sus nuevas herramientas guardadas en un pequeño baúl y sus últimas pertenencias en una maleta raída, aborda el tren hacia la ciudad vecina. El paisaje cambia lentamente: el mar da paso a colinas verdes y finalmente a edificios grises.",
+                image: null,
+                color: "from-teal-900 to-gray-900"
+            },
+            {
+                icon: "🎭",
+                title: "El Encuentro en la Plaza",
+                text: "Al llegar, en la plaza central, un coleccionista de arte con monóculo y bastón lo detiene. Sus ojos expertos detectan algo especial en este extraño viajero. \"Necesito a alguien con... tu particular talento\", dice con una sonrisa enigmática.",
+                image: null,
+                color: "from-indigo-900 to-gray-900"
+            },
+            {
+                icon: "🖼️",
+                title: "La Misión del Destino",
+                text: "\"Tres pinturas antiguas y valiosas han sido dañadas en mi colección. Necesito que las repares\", explica el coleccionista. \"Si lo haces bien, tu nombre será conocido en toda la ciudad. Este es el comienzo de tu imperio como pintor reconocido. ¿Aceptas el desafío?\"",
+                image: null,
+                color: "from-yellow-900 to-red-900",
+                final: true
+            }
+        ];
+
+        let currentStep = 0;
+        const totalSteps = storySteps.length;
+        let animating = false;
+
+        // Elementos del DOM
+        const storyCard = document.getElementById('story-card');
+        const storyContent = document.getElementById('story-content');
+        const progressBar = document.getElementById('progress-bar');
+        const currentStepEl = document.getElementById('current-step');
+        const totalStepsEl = document.getElementById('total-steps');
+
+        // Configuración inicial
+        totalStepsEl.textContent = totalSteps;
+
+        // Función para renderizar el paso actual
+        function renderStep(stepIndex) {
+            const step = storySteps[stepIndex];
+            
+            let choicesHTML = '';
+            if (step.choices) {
+                choicesHTML = `
+                    <div class="mt-8 space-y-4">
+                        <p class="text-amber-400 font-semibold mb-4">Elige tu herramienta preferida:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <button class="choice-button bg-gradient-to-br from-yellow-800 to-yellow-900 hover:from-yellow-700 hover:to-yellow-800 p-6 rounded-xl border-2 border-yellow-600 shadow-lg">
+                                <div class="text-4xl mb-3">🪶</div>
+                                <div class="font-bold text-lg">Pluma Antigua</div>
+                                <div class="text-sm text-gray-300 mt-2">Elegante y precisa</div>
+                            </button>
+                            <button class="choice-button bg-gradient-to-br from-purple-800 to-purple-900 hover:from-purple-700 hover:to-purple-800 p-6 rounded-xl border-2 border-purple-600 shadow-lg">
+                                <div class="text-4xl mb-3">✨</div>
+                                <div class="font-bold text-lg">Pelusa Mágica</div>
+                                <div class="text-sm text-gray-300 mt-2">Misteriosa y brillante</div>
+                            </button>
+                            <button class="choice-button bg-gradient-to-br from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 p-6 rounded-xl border-2 border-gray-500 shadow-lg">
+                                <div class="text-4xl mb-3">🖊️</div>
+                                <div class="font-bold text-lg">Bolígrafo Plateado</div>
+                                <div class="text-sm text-gray-300 mt-2">Moderno y vibrante</div>
+                            </button>
+                        </div>
+                        <p class="text-sm text-gray-400 italic mt-4">Todas las herramientas estarán disponibles en el juego</p>
+                    </div>
+                `;
+            }
+
+            let finalHTML = '';
+            if (step.final) {
+                finalHTML = `
+                    <div class="mt-8">
+                        <a href="index.html" class="inline-block bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white font-bold text-xl px-10 py-4 rounded-xl shadow-2xl transform hover:scale-105 transition-all duration-300">
+                            🎨 Comenzar el Juego
+                        </a>
+                        <p class="text-sm text-gray-400 mt-4">¡Tu aventura como pintor está a punto de comenzar!</p>
+                    </div>
+                `;
+            }
+
+            storyContent.innerHTML = `
+                <div class="icon-float text-8xl mb-6">${step.icon}</div>
+                <h2 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r ${step.color} bg-clip-text text-transparent">
+                    ${step.title}
+                </h2>
+                <p class="text-xl md:text-2xl text-gray-300 leading-relaxed typewriter">
+                    ${step.text}
+                </p>
+                ${choicesHTML}
+                ${finalHTML}
+            `;
+
+            // Actualizar progreso
+            const progressPercent = ((stepIndex + 1) / totalSteps) * 100;
+            progressBar.style.width = progressPercent + '%';
+            currentStepEl.textContent = stepIndex + 1;
+
+            // Agregar listeners a los botones de elección
+            if (step.choices) {
+                const choiceButtons = document.querySelectorAll('.choice-button');
+                choiceButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        if (!animating) {
+                            nextStep();
+                        }
+                    });
+                });
+            }
+        }
+
+        // Función para avanzar al siguiente paso
+        function nextStep() {
+            if (animating) return;
+            
+            if (currentStep < totalSteps - 1) {
+                animating = true;
+                
+                // Animación de salida
+                storyCard.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    currentStep++;
+                    renderStep(currentStep);
+                    
+                    // Animación de entrada
+                    storyCard.classList.remove('fade-out');
+                    storyCard.classList.add('fade-in');
+                    
+                    setTimeout(() => {
+                        storyCard.classList.remove('fade-in');
+                        animating = false;
+                    }, 800);
+                }, 600);
+            }
+        }
+
+        // Función para retroceder
+        function prevStep() {
+            if (animating) return;
+            
+            if (currentStep > 0) {
+                animating = true;
+                
+                storyCard.classList.add('fade-out');
+                
+                setTimeout(() => {
+                    currentStep--;
+                    renderStep(currentStep);
+                    
+                    storyCard.classList.remove('fade-out');
+                    storyCard.classList.add('fade-in');
+                    
+                    setTimeout(() => {
+                        storyCard.classList.remove('fade-in');
+                        animating = false;
+                    }, 800);
+                }, 600);
+            }
+        }
+
+        // Event listener para teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                nextStep();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevStep();
+            }
+        });
+
+        // Renderizar el primer paso
+        renderStep(currentStep);
+
+        // Animación de fondo con anime.js
+        anime({
+            targets: '.background-pattern',
+            opacity: [0.03, 0.08],
+            duration: 3000,
+            direction: 'alternate',
+            loop: true,
+            easing: 'easeInOutSine'
+        });
+    </script>
+</body>
+</html>

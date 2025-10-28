@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>El Pintor del Muelle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-gray-900 text-white overflow-hidden">
+    
+    <!-- Pantalla de Introducción -->
+    <div id="intro-screen" class="fixed inset-0 bg-gradient-to-b from-gray-900 via-blue-900 to-gray-900 z-50 flex items-center justify-center">
+        <div class="max-w-4xl mx-auto p-8 text-center">
+            <h1 class="text-5xl font-bold mb-8 intro-title opacity-0">El Pintor del Muelle</h1>
+            <div id="story-text" class="text-lg leading-relaxed space-y-5 opacity-0 text-gray-200">
+                <p class="story-line">📍 <strong>El Comienzo:</strong> Un hombre humilde vive en una pequeña casa al lado de un muelle. El sonido de las olas y el graznido de las gaviotas son su compañía diaria.</p>
+                
+                <p class="story-line">📰 <strong>Los Recursos:</strong> Solo posee dos cosas para pintar: papel de periódico viejo que recoge del muelle y tinta de calamar que obtiene de los pescadores locales.</p>
+                
+                <p class="story-line">✍️ <strong>La Creación:</strong> Con estos humildes materiales, cada noche pinta sus sueños y frustraciones sobre las hojas amarillentas del periódico.</p>
+                
+                <p class="story-line">🔥 <strong>El Punto de Quiebre:</strong> Una noche, lleno de dudas sobre su talento, toma su pintura más querida y la arroja al fuego. Ve cómo las llamas consumen sus trazos, reduciendo meses de trabajo a cenizas.</p>
+                
+                <p class="story-line">💰 <strong>La Venta:</strong> Días después, un hombre elegante aparece en su puerta. Está interesado en comprar la casa junto al muelle. Sin más opciones, nuestro protagonista acepta la oferta.</p>
+                
+                <p class="story-line">🎁 <strong>El Regalo Misterioso:</strong> Antes de irse, el comprador deja sobre la mesa tres herramientas como agradecimiento: <strong>una pluma antigua de escribano, una pelusa extraña que brilla levemente, y un bolígrafo plateado</strong>.</p>
+                
+                <p class="story-line">🚂 <strong>Nueva Ciudad, Nueva Vida:</strong> Con estas herramientas y sus sueños intactos, viaja a la ciudad vecina buscando un nuevo comienzo.</p>
+                
+                <p class="story-line">🎨 <strong>La Oportunidad:</strong> Al llegar, un coleccionista de arte lo aborda en la plaza. Sus ojos expertos detectan algo especial en este extraño viajero. "Necesito que repares tres pinturas valiosas que fueron dañadas", dice extendiendo su mano.</p>
+                
+                <p class="story-line">👑 <strong>Tu Destino:</strong> Esta es tu oportunidad. Completa el encargo, demuestra tu talento, y tal vez... solo tal vez, puedas construir un imperio como pintor reconocido.</p>
+                
+                <p class="story-line text-amber-400 font-semibold mt-6">¿Estás listo para comenzar tu viaje artístico?</p>
+            </div>
+            
+            <!-- Indicador de saltar introducción -->
+            <div class="mt-6 opacity-70">
+                <p class="text-sm text-gray-400 animate-pulse">
+                    Presiona <kbd class="px-2 py-1 bg-gray-700 rounded text-amber-400 text-xs font-mono">ESPACIO</kbd> o 
+                    <kbd class="px-2 py-1 bg-gray-700 rounded text-amber-400 text-xs font-mono">ENTER</kbd> para saltar la introducción
+                </p>
+            </div>
+            
+            <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center opacity-0" id="buttons-container">
+                <button id="start-game-btn" class="px-8 py-4 bg-amber-600 hover:bg-amber-700 text-white text-xl rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    🎨 Comenzar Mi Historia
+                </button>
+                <a href="story-mode.html" class="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white text-xl rounded-lg transition-all transform hover:scale-105 shadow-lg">
+                    📖 Modo Historia Interactivo
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interfaz Principal del Juego -->
+    <div id="game-screen" class="hidden h-screen flex flex-col">
+        
+        <!-- Barra Superior - Estadísticas -->
+        <header class="bg-gray-800 border-b border-gray-700 p-4 flex justify-between items-center">
+            <div class="flex items-center gap-6">
+                <h1 class="text-2xl font-bold text-amber-500">🎨 El Pintor del Muelle</h1>
+                <div class="flex gap-4">
+                    <div class="bg-green-900 px-4 py-2 rounded">
+                        <span class="text-green-300">💰 Dinero:</span>
+                        <span id="money" class="font-bold text-white ml-2">$0</span>
+                    </div>
+                    <div class="bg-purple-900 px-4 py-2 rounded">
+                        <span class="text-purple-300">⭐ Reputación:</span>
+                        <span id="reputation" class="font-bold text-white ml-2">0</span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <button id="missions-btn" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded flex items-center gap-2">
+                    📋 Misiones
+                    <span id="mission-badge" class="hidden bg-red-500 text-xs px-2 py-1 rounded-full">!</span>
+                </button>
+                <button id="reset-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded flex items-center gap-2" title="Reiniciar Progreso">
+                    🔄 Reiniciar
+                </button>
+            </div>
+        </header>
+
+        <!-- Contenido Principal -->
+        <div class="flex flex-1 overflow-hidden">
+            
+            <!-- Panel Lateral Izquierdo - Herramientas -->
+            <aside class="w-80 bg-gray-800 border-r border-gray-700 p-4 overflow-y-auto">
+                <h2 class="text-xl font-bold mb-4 text-amber-400">🛠️ Herramientas</h2>
+                
+                <!-- Selector de Herramienta -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">Herramienta</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button class="tool-btn active" data-tool="pluma">
+                            <span class="text-2xl">🪶</span>
+                            <span class="text-xs">Pluma</span>
+                        </button>
+                        <button class="tool-btn" data-tool="pelusa">
+                            <span class="text-2xl">✨</span>
+                            <span class="text-xs">Pelusa</span>
+                        </button>
+                        <button class="tool-btn" data-tool="boligrafo">
+                            <span class="text-2xl">🖊️</span>
+                            <span class="text-xs">Bolígrafo</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Paleta de Colores -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">Color</label>
+                    <div class="grid grid-cols-5 gap-2 mb-2">
+                        <button class="color-btn active" data-color="#000000" style="background: #000000;" title="Tinta de Calamar"></button>
+                        <button class="color-btn" data-color="#424242" style="background: #424242;"></button>
+                        <button class="color-btn" data-color="#757575" style="background: #757575;"></button>
+                        <button class="color-btn" data-color="#9E9E9E" style="background: #9E9E9E;"></button>
+                        <button class="color-btn" data-color="#FFFFFF" style="background: #FFFFFF; border: 1px solid #666;"></button>
+                        <button class="color-btn" data-color="#8B4513" style="background: #8B4513;"></button>
+                        <button class="color-btn" data-color="#D2691E" style="background: #D2691E;"></button>
+                        <button class="color-btn" data-color="#DEB887" style="background: #DEB887;"></button>
+                        <button class="color-btn" data-color="#F5DEB3" style="background: #F5DEB3;"></button>
+                        <button class="color-btn" data-color="#FFE4B5" style="background: #FFE4B5;"></button>
+                    </div>
+                    <div class="mt-3">
+                        <label class="block text-xs font-semibold mb-2 text-amber-400">🎨 Color Personalizado</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="custom-color" class="w-full h-12 rounded-lg cursor-pointer border-2 border-gray-600 hover:border-amber-500 transition-all" value="#000000">
+                            <span id="color-hex" class="text-xs text-gray-400 font-mono">#000000</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tamaño del Pincel -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">
+                        Tamaño: <span id="brush-size-display">5</span>px
+                    </label>
+                    <input type="range" id="brush-size" min="1" max="50" value="5" class="w-full">
+                </div>
+
+                <!-- Opacidad -->
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold mb-2">
+                        Opacidad: <span id="opacity-display">100</span>%
+                    </label>
+                    <input type="range" id="opacity" min="0" max="100" value="100" class="w-full">
+                </div>
+
+                <!-- Acciones de Canvas -->
+                <div class="space-y-2 mb-6">
+                    <button id="undo-btn" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">↶ Deshacer</button>
+                    <button id="redo-btn" class="w-full px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded">↷ Rehacer</button>
+                    <button id="clear-btn" class="w-full px-4 py-2 bg-red-700 hover:bg-red-600 rounded">🗑️ Limpiar</button>
+                    <button id="newspaper-bg-btn" class="w-full px-4 py-2 bg-amber-700 hover:bg-amber-600 rounded">📰 Fondo Periódico</button>
+                </div>
+
+                <!-- Acciones con la Obra -->
+                <div class="border-t border-gray-700 pt-4 space-y-2">
+                    <h3 class="text-lg font-bold mb-2 text-amber-400">Acciones</h3>
+                    <button id="save-btn" class="w-full px-4 py-2 bg-green-700 hover:bg-green-600 rounded">💾 Guardar</button>
+                    <button id="sell-btn" class="w-full px-4 py-2 bg-blue-700 hover:bg-blue-600 rounded">💵 Vender</button>
+                    <button id="burn-btn" class="w-full px-4 py-2 bg-orange-700 hover:bg-orange-600 rounded">🔥 Quemar</button>
+                    <button id="gallery-btn" class="w-full px-4 py-2 bg-purple-700 hover:bg-purple-600 rounded">🖼️ Galería</button>
+                </div>
+            </aside>
+
+            <!-- Área de Canvas -->
+            <main class="flex-1 bg-gray-700 p-8 flex items-center justify-center overflow-auto">
+                <div class="relative">
+                    <canvas id="drawing-canvas" width="800" height="600" class="bg-white shadow-2xl cursor-crosshair"></canvas>
+                    <div id="canvas-info" class="absolute bottom-2 right-2 bg-black bg-opacity-50 px-2 py-1 text-xs rounded">
+                        Tiempo: <span id="canvas-time">0:00</span>
+                    </div>
+                </div>
+            </main>
+
+        </div>
+    </div>
+
+    <!-- Modal de Venta -->
+    <div id="sell-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40 flex items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-4 text-amber-400">💵 Vender Pintura</h2>
+            <div class="mb-6">
+                <p class="text-gray-300 mb-4">Tu obra ha sido evaluada:</p>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Calidad del trazo:</span>
+                        <span id="sell-quality" class="text-green-400"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Tiempo invertido:</span>
+                        <span id="sell-time" class="text-blue-400"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Variedad de color:</span>
+                        <span id="sell-variety" class="text-purple-400"></span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Bonificación reputación:</span>
+                        <span id="sell-bonus" class="text-amber-400"></span>
+                    </div>
+                </div>
+                <div class="border-t border-gray-600 mt-4 pt-4">
+                    <div class="flex justify-between text-xl font-bold">
+                        <span>Precio total:</span>
+                        <span id="sell-price" class="text-green-400"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="flex gap-4">
+                <button id="confirm-sell-btn" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded">Vender</button>
+                <button id="cancel-sell-btn" class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Quemar -->
+    <div id="burn-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40 flex items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-4 text-orange-400">🔥 Quemar Pintura</h2>
+            <p class="text-gray-300 mb-6">¿Estás seguro de que quieres quemar tu obra? Esta acción no se puede deshacer.</p>
+            <p class="text-sm text-gray-400 italic mb-6">"A veces, destruir es necesario para crear algo nuevo..."</p>
+            <div class="flex gap-4">
+                <button id="confirm-burn-btn" class="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded">Quemar</button>
+                <button id="cancel-burn-btn" class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Galería -->
+    <div id="gallery-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40 overflow-auto">
+        <div class="min-h-screen p-8">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-3xl font-bold text-amber-400">🖼️ Galería</h2>
+                    <button id="close-gallery-btn" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded">Cerrar</button>
+                </div>
+                <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Las pinturas se cargarán aquí -->
+                </div>
+                <div id="empty-gallery" class="text-center text-gray-400 py-12">
+                    <p class="text-xl">Tu galería está vacía</p>
+                    <p class="text-sm mt-2">Crea y guarda tus obras para verlas aquí</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Misiones -->
+    <div id="missions-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40 flex items-center justify-center overflow-auto">
+        <div class="bg-gray-800 rounded-lg p-8 max-w-2xl w-full mx-4 my-8">
+            <h2 class="text-2xl font-bold mb-4 text-amber-400">📋 Misiones</h2>
+            <div id="missions-content">
+                <!-- Misión principal -->
+                <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                    <h3 class="text-xl font-bold mb-2">Arreglar 3 Pinturas</h3>
+                    <p class="text-gray-300 mb-3">Un coleccionista te ha pedido restaurar tres pinturas dañadas.</p>
+                    <div class="mb-3">
+                        <div class="flex justify-between text-sm mb-1">
+                            <span>Progreso:</span>
+                            <span><span id="mission-progress">0</span>/3</span>
+                        </div>
+                        <div class="w-full bg-gray-600 rounded-full h-2">
+                            <div id="mission-progress-bar" class="bg-green-500 h-2 rounded-full" style="width: 0%"></div>
+                        </div>
+                    </div>
+                    <div class="text-sm text-amber-300 mb-3">
+                        Recompensa: $500 + 50 de Reputación
+                    </div>
+                    <button id="start-repair-btn" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded">
+                        Iniciar Reparación
+                    </button>
+                </div>
+            </div>
+            <button id="close-missions-btn" class="w-full px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded mt-4">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Modal de Reparación -->
+    <div id="repair-modal" class="hidden fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+        <div class="max-w-4xl w-full mx-4">
+            <div class="bg-gray-800 rounded-lg p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-amber-400">🔧 Reparando Pintura <span id="repair-number">1</span>/3</h2>
+                    <div class="text-right">
+                        <div class="text-sm text-gray-400">Tiempo restante</div>
+                        <div id="repair-timer" class="text-2xl font-bold text-red-400">60</div>
+                    </div>
+                </div>
+                <p id="repair-instruction" class="text-gray-300 mb-4"></p>
+                <div class="relative">
+                    <canvas id="repair-canvas" width="700" height="500" class="bg-white mx-auto shadow-2xl cursor-crosshair"></canvas>
+                    <div id="repair-target" class="absolute border-4 border-red-500 border-dashed pointer-events-none hidden"></div>
+                </div>
+                <div class="mt-4 flex justify-between items-center">
+                    <div>
+                        <span class="text-sm text-gray-400">Progreso: </span>
+                        <span id="repair-completion">0</span>%
+                    </div>
+                    <button id="skip-repair-btn" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded text-sm">Abandonar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Reinicio -->
+    <div id="reset-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 z-40 flex items-center justify-center">
+        <div class="bg-gray-800 rounded-lg p-8 max-w-md w-full mx-4 border-2 border-red-500">
+            <h2 class="text-2xl font-bold mb-4 text-red-400">⚠️ Reiniciar Progreso</h2>
+            <p class="text-gray-300 mb-4">¿Estás seguro de que quieres reiniciar todo tu progreso?</p>
+            <div class="bg-gray-900 rounded p-4 mb-6 space-y-2 text-sm">
+                <p class="text-yellow-400">⚠️ Se perderá:</p>
+                <ul class="list-disc list-inside text-gray-300 space-y-1">
+                    <li>Todo tu dinero</li>
+                    <li>Toda tu reputación</li>
+                    <li>Todas tus pinturas guardadas</li>
+                    <li>El progreso de misiones</li>
+                </ul>
+            </div>
+            <p class="text-red-400 text-sm italic mb-6">Esta acción no se puede deshacer.</p>
+            <div class="flex gap-4">
+                <button id="confirm-reset-btn" class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 rounded font-bold">Sí, Reiniciar</button>
+                <button id="cancel-reset-btn" class="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Efecto de Quemado -->
+    <div id="burn-effect" class="hidden fixed inset-0 pointer-events-none z-50">
+        <canvas id="burn-canvas" class="w-full h-full"></canvas>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

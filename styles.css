@@ -1,0 +1,363 @@
+/* Estilos personalizados para El Pintor del Muelle */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    user-select: none;
+}
+
+/* Animaciones de introducción */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.intro-title {
+    animation: fadeInUp 1s ease-out forwards;
+}
+
+.story-line {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0;
+}
+
+/* Botones de herramientas */
+.tool-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px;
+    background: #374151;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tool-btn:hover {
+    background: #4B5563;
+    transform: translateY(-2px);
+}
+
+.tool-btn.active {
+    background: #1F2937;
+    border-color: #F59E0B;
+}
+
+/* Botones de color */
+.color-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.color-btn:hover {
+    transform: scale(1.1);
+}
+
+.color-btn.active {
+    border-color: #F59E0B;
+    box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
+}
+
+/* Canvas */
+#drawing-canvas {
+    max-width: 100%;
+    max-height: 100%;
+    border: 4px solid #1F2937;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+}
+
+#repair-canvas {
+    border: 4px solid #1F2937;
+}
+
+/* Sliders personalizados */
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: #4B5563;
+    outline: none;
+    -webkit-appearance: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #F59E0B;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    background: #FBBF24;
+    transform: scale(1.2);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #F59E0B;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+input[type="range"]::-moz-range-thumb:hover {
+    background: #FBBF24;
+    transform: scale(1.2);
+}
+
+/* Cards de galería */
+.gallery-item {
+    background: #374151;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+
+.gallery-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.gallery-item img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: white;
+}
+
+.gallery-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+}
+
+.gallery-actions button {
+    flex: 1;
+    padding: 8px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+/* Efecto de partículas de quemado */
+.burn-particle {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: radial-gradient(circle, #FF6B35, #F7931E);
+    border-radius: 50%;
+    pointer-events: none;
+    box-shadow: 0 0 10px #FF6B35;
+}
+
+/* Textura de papel periódico */
+.newspaper-texture {
+    background-image: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0,0,0,0.03) 0px,
+            rgba(0,0,0,0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(0,0,0,0.03) 0px,
+            rgba(0,0,0,0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    background-color: #F5F5DC;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    aside {
+        width: 100%;
+        border-right: none;
+        border-bottom: 2px solid #374151;
+        max-height: 40vh;
+    }
+
+    .flex {
+        flex-direction: column;
+    }
+
+    #drawing-canvas {
+        max-width: 90vw;
+        max-height: 50vh;
+    }
+}
+
+/* Animación de pulso para notificaciones */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+#mission-badge {
+    animation: pulse 1.5s infinite;
+}
+
+/* Scrollbar personalizada */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1F2937;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #4B5563;
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6B7280;
+}
+
+/* Transiciones suaves */
+button {
+    transition: all 0.2s ease;
+}
+
+button:active {
+    transform: scale(0.95);
+}
+
+/* Estilos para el área de reparación objetivo */
+#repair-target {
+    transition: opacity 0.3s;
+}
+
+/* Loading spinner */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.spinner {
+    border: 3px solid #374151;
+    border-top-color: #F59E0B;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+/* Notificaciones toast */
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #1F2937;
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    z-index: 100;
+    animation: slideInRight 0.3s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Estilos para input de color */
+input[type="color"] {
+    border: 2px solid #4B5563;
+    cursor: pointer;
+}
+
+input[type="color"]::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+input[type="color"]::-webkit-color-swatch {
+    border: none;
+    border-radius: 6px;
+}
+
+/* Botón de reinicio */
+#reset-btn {
+    transition: all 0.3s ease;
+}
+
+#reset-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+}
+
+#reset-btn:active {
+    transform: scale(0.95);
+}
+
+/* Responsive para botones del header */
+@media (max-width: 768px) {
+    header {
+        flex-direction: column;
+        gap: 12px;
+    }
+    
+    header .flex {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    #reset-btn, #missions-btn {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+}
